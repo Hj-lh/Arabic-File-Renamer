@@ -1,5 +1,5 @@
-## AI Arabic Namer
-it renames your files (PDFs, PNGs, JPGs) in arabic names with the power of LLM you could give a prompt of what type of names you want it to be
+## AI Arabic File Renamer
+Reads and understand the files(PDFs, PNGs, JPGs) to rename them in Arabic using an LLM, with customizable naming prompts.
 
 ## To use it you need to download the next requirements
 ### 1. python 3.6+
