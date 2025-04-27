@@ -6,21 +6,22 @@ from PIL import Image
 import shutil
 import requests
 import json
-pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
+pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe" #if you downloaded OCR in the system not in your env then you need to verify the path here 
+
 # Configuration
-INPUT_FOLDER = "D:/Family/father's scans"  # Replace with your input folder path (e.g., "C:\\HouseScans")
-OUTPUT_FOLDER = "D:/Family/father's scans named"  # Replace with your output folder path (e.g., "C:\\RenamedHouseFiles")
+INPUT_FOLDER = "D:/Family/father's scans"  # Replace with your input folder path (e.g., "C:\\Scans")
+OUTPUT_FOLDER = "D:/Family/father's scans named"  # Replace with your output folder path (e.g., "C:\\RenamedscansFiles")
 SUPPORTED_EXTENSIONS = (".pdf", ".png", ".jpg", ".jpeg")
-OLLAMA_API_URL = "http://localhost:11434/api/generate"  # Default Ollama API endpoint
-OLLAMA_MODEL = "qwen2.5:7b-instruct-q4_0"  # Replace with your model (e.g., "mistral" or "gemma")
+OLLAMA_API_URL = "http://localhost:11434/api/generate"  # Default Ollama API endpoint --> before running the script make sure ollama is running
+OLLAMA_MODEL = "qwen2.5:7b-instruct-q4_0"  # Replace with your model if you low in resource i suggest this one (qwen2.5:1.5b-instruct-q4_0)
 
 def ensure_output_folder():
-    """Create output folder if it doesn't exist."""
+
     if not os.path.exists(OUTPUT_FOLDER):
         os.makedirs(OUTPUT_FOLDER)
 
 def extract_text_from_pdf(file_path):
-    """Extract text directly from a PDF file using PyPDF2."""
+
     try:
         with open(file_path, "rb") as file:
             reader = PyPDF2.PdfReader(file)
@@ -35,17 +36,18 @@ def extract_text_from_pdf(file_path):
         return ""
 
 def extract_text_from_image(file_path):
-    """Extract text from an image file using OCR with Arabic support."""
+
     try:
         image = Image.open(file_path)
         text = pytesseract.image_to_string(image, lang="ara")
         return text.strip()
+    
     except Exception as e:
         print(f"Error extracting text from image {file_path}: {e}")
         return ""
 
 def extract_text_from_pdf_ocr(file_path):
-    """Convert PDF to images and extract text using OCR with Arabic support."""
+
     try:
         images = convert_from_path(file_path, dpi=300)  # Higher DPI for better OCR
         text = ""
@@ -59,15 +61,14 @@ def extract_text_from_pdf_ocr(file_path):
         return ""
 
 def query_ollama(text):
-    """Query Ollama to generate an Arabic file name based on text."""
+    """Query Ollama to generate an Arabic file name based on text. if you want to change it make ChatGPT or claude help you with the prompt"""
     prompt = (
-        "You are an assistant that generates Arabic file names for house-building documents. "
+        "You are an assistant that generates Arabic file names for documents. "
         "Read the following text from a document and identify the company name, which is typically at the top in the first few lines. "
-        "If the company name is in English, transliterate or translate it to Arabic (e.g., 'LingTechSystem' to 'لينغ_تك_سيستم'). "
+        "If the company name is in English, transliterate or translate it to Arabic (e.g., 'LingTechSystem' to 'لينغ_تك_سيستم'). " #if you doesn't care about the transliation remove this one
         "Create a concise file name using the company name in Arabic. "
         "Include a date (e.g., 2025-04-15) if present in the text, or use today's date (2025-04-26). "
         "Format the name as: [CompanyName] [Date], with a space between the company name and date, "
-        "and ensure the company name itself has spaces if needed (e.g., المقاولون العرب 2025-04-26). "
         "Return only the name without extension. Text: \n" + (text if text else "No text extracted")
     )
 
@@ -101,28 +102,27 @@ def suggest_file_name(text, original_file):
     return f"{new_name}{extension}"
 
 def process_file(file_path):
-    """Process a single file and create a renamed copy."""
+
     file_name = os.path.basename(file_path)
     extension = os.path.splitext(file_name)[1].lower()
 
-    # Extract text based on file type
     text = ""
     if extension == ".pdf":
-        text = extract_text_from_pdf(file_path)  # Try direct extraction first
-        if not text:  # Fallback to OCR if direct extraction fails
+        text = extract_text_from_pdf(file_path)  
+        if not text:  
             text = extract_text_from_pdf_ocr(file_path)
     elif extension in (".png", ".jpg", ".jpeg"):
         text = extract_text_from_image(file_path)
 
-    # Log extracted text for debugging
-    print(f"Extracted text from {file_name}: {text[:100]}...")  # First 100 chars
+
+    print(f"Extracted text from {file_name}: {text[:100]}...")  
 
     try:
         # Suggest new file name using Ollama
         new_name = suggest_file_name(text, file_name)
         new_file_path = os.path.join(OUTPUT_FOLDER, new_name)
 
-        # Handle duplicate names by adding a counter
+
         counter = 1
         base_name, ext = os.path.splitext(new_name)
         while os.path.exists(new_file_path):
@@ -130,14 +130,13 @@ def process_file(file_path):
             new_file_path = os.path.join(OUTPUT_FOLDER, new_name)
             counter += 1
 
-        # Copy the file with the new name
         shutil.copy2(file_path, new_file_path)
         print(f"Renamed: {file_name} -> {new_name}")
     except Exception as e:
         print(f"Failed to rename {file_name}: {e}")
 
 def main():
-    """Main function to process all files in the input folder."""
+    
     ensure_output_folder()
 
     for file_name in os.listdir(INPUT_FOLDER):
