@@ -34,8 +34,8 @@ Reads and understand the files(PDFs, PNGs, JPGs) to rename them in Arabic using 
 1. Clone the repo:
 
    ```bash
-   git clone https://github.com/your-username/house-scans-renamer.git
-   cd house-scans-renamer
+   git clone https://github.com/Hj-lh/Arabic-File-Renamer.git
+   cd Arabic-File-Renamer
    ```
 
 2. Install dependencies:
