@@ -5,7 +5,7 @@ Reads and understand the files(PDFs, PNGs, JPGs) to rename them in Arabic using 
 ### 1. python 3.6+
 ### 2. Tesseract OCR
 
-- ** Windows**:
+- **Windows**:
   - Download Tesseract OCR GitHub
   - Install to `C:\Program Files\Tesseract-OCR`.
   - Add to PATH: `C:\Program Files\Tesseract-OCR`.
