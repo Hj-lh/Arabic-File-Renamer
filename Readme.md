@@ -55,4 +55,12 @@ Edit `namer.py`:
 - `OLLAMA_MODEL`: Your Ollama model (e.g., `"qwen2.5:7b-instruct-q4_0"`).
 - To customize naming, edit the prompt in `query_ollama` (e.g., change `[CompanyName] [Date]` to `[Date] [CompanyName]`).
 
+## Contributing 
 
+Fork and contribute! Idea Add a UI.
+
+- Fork the repo.
+- Branch: `git checkout -b feature/ui`.
+- Commit: `git commit -m "Add UI"`.
+- Push: `git push origin feature/ui`.
+- Open a pull request.
